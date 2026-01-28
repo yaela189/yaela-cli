@@ -28,16 +28,26 @@ console = Console()
 # --- פונקציות עזר ---
 
 def fix_text(text):
-    """מסדר עברית שתופיע נכון בטרמינל"""
+    """
+    מסדר עברית שתופיע נכון בטרמינל.
+    בודק את מערכת ההפעלה:
+    - ב-Windows ('nt') הופך את הטקסט ויזואלית.
+    - ב-Mac/Linux משאיר רגיל (כי הטרמינל תומך עברית).
+    """
     if not text: return ""
-    return get_display(str(text))
+    
+    # בדיקת מערכת הפעלה
+    if os.name == 'nt':  # Windows
+        return get_display(str(text))
+    
+    # Mac / Linux
+    return str(text)
 
 def get_gc():
     return gspread.service_account(filename='service_account.json')
 
 def load_data():
     """טוען נתונים"""
-    # עדכון טקסט: מאגר מידע חטיבתי
     msg = fix_text("מתחבר למאגר המידע החטיבתי...")
     with console.status(f"[bold green]{msg}[/bold green]", spinner="dots"):
         try:
@@ -68,7 +78,6 @@ def show_battalions(df):
     
     clear_screen()
     
-    # עדכון טקסט: מערכת יעלה
     title = fix_text("מערכת יעלה - שליטה חטיבתית 🛡️")
     rprint(Panel.fit(f"[bold cyan]{title}[/bold cyan]", border_style="cyan"))
     
@@ -128,7 +137,6 @@ def show_files(df, battalion):
         # הוספת השורה לטבלה
         table.add_row(fname, actions_str)
         
-        # תיאור הקובץ
         if desc:
             table.add_row(f"[dim]└─ {desc}[/dim]", "")
             table.add_section() 
